@@ -183,7 +183,7 @@ class Secret_Santa {
 					$submit_text = __( 'Sign up!', 'secret-santa' );
 
 					if ( $user_post ) {
-						echo '<p class="alert">' . esc_html__( 'You are already signed up!  You may update your details below:', 'secret-santa' ) . '</p>';
+						echo '<p class="alert">' . esc_html__( 'Thanks for signing up! You may update your details below:', 'secret-santa' ) . '</p>';
 						$submit_text = __( 'Update info!', 'secret-santa' );
 						$defaults = array(
 							'shipping_address' => get_post_meta( $user_post->ID, 'secret-santa :: shipping_address', true ),
@@ -225,13 +225,13 @@ class Secret_Santa {
 					endif;
 				endif; ?>
 			<?php elseif ( 2 === $state ) : /* stage two -- signups closed, waiting on assignments */ ?>
-				<p><?php esc_html_e( 'We are currently sorting out who ships to who and whatnot, and hope to have them available shortly!', 'secret-santa' ); ?></p>
+				<p><?php esc_html_e( 'We are currently sorting out who ships to whom and whatnot, and hope to have them available shortly!', 'secret-santa' ); ?></p>
 				<?php if ( ! $user_id ) : ?>
 					<p><?php esc_html_e( 'Want to confirm whether you had signed up? Log in!', 'secret-santa' ); ?></p>
 					<?php wp_login_form(); ?>
 				<?php else :
 					if ( $user_post ) {
-						echo '<p class="alert">' . esc_html__( 'You are already signed up!', 'secret-santa' ) . '</p>';
+						echo '<p class="alert">' . esc_html__( 'You are signed up!', 'secret-santa' ) . '</p>';
 					} else {
 						echo '<p class="alert">' . esc_html__( 'Unfortunately, sign-ups are now closed, and it doesn\'t look like you signed up!', 'secret-santa' ) . '</p>';
 					}
