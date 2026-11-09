@@ -2,7 +2,7 @@
 
 /*
  * Plugin Name: Secret Santa
- * Plugin URI: http://github.com/georgestephanis/secret-santa
+ * Plugin URI: https://github.com/jonathanbossenger/secret-santa
  * Description: A plugin that lets you organize Secret Santa groups.
  * Author: George Stephanis
  * Version: 0.1-dev
