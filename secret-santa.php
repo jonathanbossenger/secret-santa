@@ -264,6 +264,10 @@ class Secret_Santa {
 
 						<h3><?php esc_html_e( 'Would you like to send a message?', 'secret-santa' ); ?></h3>
 
+						<?php if ( isset( $_GET['missing-username-error'] ) ) : ?>
+							<h2 id="message-error" style="color:#f00">Oh no! Something went wrong in sending your message! Username not found!</h2>
+						<?php endif; ?>
+
 						<?php if ( isset( $_GET['message_sent_to'] ) && 'recipient' === $_GET['message_sent_to'] ) : ?>
 							<h2 id="secret-santa_message-recipient"><?php echo esc_html( sprintf( __( 'Your message has been sent (anonymously) to %s!', 'secret-santa' ), $shipping_to_user->display_name ) ); ?></h2>
 						<?php else : ?>
@@ -387,7 +391,14 @@ class Secret_Santa {
 
 		$event = ! empty( $_REQUEST['event'] ) ? sanitize_title( $_REQUEST['event'] ) : 'default-event';
 		$to_post = self::get_sender_post_by_recipient( $user, $event );
-		$to_user = get_user_by( 'login', $to_post->post_name );
+
+		$post_name = explode( '-', $to_post->post_name )[0];
+		$to_user = get_user_by( 'login', $post_name );
+
+		if ( ! $to_user ) {
+			wp_safe_redirect( '/?missing-username-error#message-error' );
+			return;
+		}
 
 		/**
 		 * This filter allows implementations to swap out the messaging method -- for
@@ -412,6 +423,11 @@ class Secret_Santa {
 
 		$to = get_post_meta( $user_post->ID, 'secret-santa :: shipping_to', true );
 		$to_user = get_user_by( 'login', $to );
+
+		if ( ! $to_user ) {
+			wp_safe_redirect( '/?missing-username-error#message-error' );
+			return;
+		}
 
 		/**
 		 * This filter allows implementations to swap out the messaging method -- for
@@ -485,10 +501,16 @@ class Secret_Santa {
 			wp_send_json_error( __( 'Cheatin\', uh?', 'secret-santa' ) );
 		}
 
-		foreach ( $_POST['elf'] as $elf_id => $send_to ) {
+		if ( ! isset( $_POST['elf'] ) || ! is_array( $_POST['elf'] ) ) {
+			wp_send_json_error( 'No assignments provided!' );
+		}
+		/** @var array $elf */
+		$elf = $_POST['elf'];
+
+		foreach ( $elf as $elf_id => $send_to ) {
 			update_post_meta( intval( $elf_id ), 'secret-santa :: shipping_to', sanitize_text_field( $send_to ) );
 		}
-		wp_send_json_success( sprintf( __( 'Success! %d assignments saved!', 'secret-santa' ), sizeof( $_POST['elf'] ) ) );
+		wp_send_json_success( sprintf( __( 'Success! %d assignments saved!', 'secret-santa' ), count( $elf ) ) );
 	}
 
 	/**
